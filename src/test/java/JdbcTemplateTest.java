@@ -55,7 +55,7 @@ public class JdbcTemplateTest {
     @Test
     public void queryObjectByArgs() {
         String sql = "select * from user where name = ?";
-        Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper(), new Object[]{"xiaoXuanXuan"});
+        Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper(), new Object[]{"xiaoXiaoNa"});
         System.out.println(stringObjectMap);
         Assert.assertNotNull(stringObjectMap);
     }
@@ -70,22 +70,26 @@ public class JdbcTemplateTest {
     @Test
     public void executeUpdate() {
 
-        User userUpdateBefore = jdbcTemplate.queryObject("select * from user where id=3", User.class);
+       // User userUpdateBefore = jdbcTemplate.queryObject("select * from user where id=3", User.class);
+        List<User> userUpdateBefore = jdbcTemplate.queryList("select * from user", User.class);
         System.out.println(userUpdateBefore);
         Assert.assertNotNull(userUpdateBefore);
 
-        String sql = "update user set name = 'xiaoXiaoNa' where name='xiaoXiaoXuan'";
+        //String sql = "update user set name = 'xiaoXiaoXuan' where name='xiaoXiaoNa'";
+        String sql = "insert into user (id,name,age) values (4,'xiaoPingPing',26)";
         int rowCounts = jdbcTemplate.executeUpdate(sql);
         System.out.println(rowCounts);
-        User userUpdateAfter = jdbcTemplate.queryObject("select * from user where id=3", User.class);
+        //User userUpdateAfter = jdbcTemplate.queryObject("select * from user where id=3", User.class);
+        List<User> userUpdateAfter = jdbcTemplate.queryList("select * from user", User.class);
         System.out.println(userUpdateAfter);
         Assert.assertNotNull(userUpdateAfter);
+
     }
 
     @Test
     public void executeUpdateByArgs() {
         String sql = "update user set name = ? where id = ?";
-        Object[] args = new Object[]{"zhaoHongXuan",2};
+        Object[] args = new Object[]{"dounana",2};
 
         String selectSql = "select * from user where id =2";
         User userUpdateBefore = jdbcTemplate.queryObject(selectSql, User.class);

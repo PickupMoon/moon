@@ -1,0 +1,23 @@
+package org.dounana.core;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class UpdateStatementCallback<T> implements StatementCallback<Integer>{
+
+    private String sql;
+
+    public UpdateStatementCallback(String sql) {
+        this.sql = sql;
+    }
+
+    @Override
+    public Integer doStatement(Statement statement) {
+        try {
+            return statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+}

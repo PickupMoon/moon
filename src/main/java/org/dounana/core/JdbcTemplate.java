@@ -8,39 +8,25 @@ import java.util.List;
 
 public class JdbcTemplate implements JdbcOperation{
 
+
     @Override
     public <T> List<T> queryList(String sql, RowMapper<T> rowMapper) {
-
-        List<T> resultList = new ArrayList<>();
-        try {
-            Statement statement = JdbcUtil.connection().createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                resultList.add(rowMapper.rowConvert(resultSet));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return resultList;
+        return execute(new QueryStatementCallback<>(sql, rowMapper));
     }
 
     @Override
     public <T> List<T> queryList(String sql, RowMapper<T> rowMapper, Object[] args) {
-        List<T> resultList = new ArrayList<>();
         try {
             PreparedStatement prepareStatement = JdbcUtil.connection().prepareStatement(sql);
             for (int i = 0; i < args.length; i++) {
                 prepareStatement.setObject(i+1,args[i]);
             }
             ResultSet resultSet = prepareStatement.executeQuery();
-
-            while (resultSet.next()) {
-                resultList.add(rowMapper.rowConvert(resultSet));
-            }
+            return new RowResultExtractor<>(rowMapper).resultConduct(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return resultList;
+        return new ArrayList<>();
     }
 
     @Override
@@ -84,9 +70,7 @@ public class JdbcTemplate implements JdbcOperation{
     @Override
     public int executeUpdate(String sql) {
         try {
-            Statement statement = JdbcUtil.connection().createStatement();
-            int rowCounts = statement.executeUpdate(sql);
-            return rowCounts;
+            return  new UpdateStatementCallback<Integer>(sql).doStatement(JdbcUtil.connection().createStatement());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -116,6 +100,16 @@ public class JdbcTemplate implements JdbcOperation{
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private <T> T execute( StatementCallback<T> statementCallback) {
+        try {
+            Connection connection = JdbcUtil.connection();
+            return statementCallback.doStatement(connection.createStatement());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
