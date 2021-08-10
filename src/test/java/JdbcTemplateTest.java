@@ -29,8 +29,8 @@ public class JdbcTemplateTest {
     public void queryListByParameter() {
         String sql = "select * from user where  id >= ? ";
         RowMapper<Map<String,Object>> rowMapper = new MapRowMapper();
-        Object[] args = new Object[]{2};
-        List<Map<String, Object>> mapList = jdbcTemplate.queryList(sql, rowMapper, args);
+       // Object[] args = new Object[]{2};
+        List<Map<String, Object>> mapList = jdbcTemplate.queryList(sql, rowMapper, 2);
         System.out.println(mapList);
         Assert.assertNotNull(mapList);
     }
@@ -43,19 +43,21 @@ public class JdbcTemplateTest {
         Assert.assertNotNull(mapList);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void queryObject(){
         //1. parepare data
         //2 execute
         //3. compare
-        String sql = "select * from user where id >=1 ";
+        String sql = "select * from user where id = 1 ";
         Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper());
+        System.out.println(stringObjectMap);
+        Assert.assertNotNull(stringObjectMap);
     }
 
     @Test
     public void queryObjectByArgs() {
         String sql = "select * from user where name = ?";
-        Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper(), new Object[]{"xiaoXiaoNa"});
+        Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper(), "xiaoXiaoXuan");
         System.out.println(stringObjectMap);
         Assert.assertNotNull(stringObjectMap);
     }
@@ -76,7 +78,7 @@ public class JdbcTemplateTest {
         Assert.assertNotNull(userUpdateBefore);
 
         //String sql = "update user set name = 'xiaoXiaoXuan' where name='xiaoXiaoNa'";
-        String sql = "insert into user (id,name,age) values (4,'xiaoPingPing',26)";
+        String sql = "insert into user (id,name,age) values (7,'XiaPing',28)";
         int rowCounts = jdbcTemplate.executeUpdate(sql);
         System.out.println(rowCounts);
         //User userUpdateAfter = jdbcTemplate.queryObject("select * from user where id=3", User.class);
@@ -89,14 +91,14 @@ public class JdbcTemplateTest {
     @Test
     public void executeUpdateByArgs() {
         String sql = "update user set name = ? where id = ?";
-        Object[] args = new Object[]{"dounana",2};
+        Object[] args = new Object[]{"douna",2};
 
         String selectSql = "select * from user where id =2";
         User userUpdateBefore = jdbcTemplate.queryObject(selectSql, User.class);
         System.out.println("Message for update before [ "+userUpdateBefore+" ]");
         Assert.assertNotNull(userUpdateBefore);
 
-        int rowCounts = jdbcTemplate.executeUpdate(sql, args);
+        int rowCounts = jdbcTemplate.executeUpdate(sql, "douNaNa",2);
 
         System.out.println("影响的行数:[ "+rowCounts+" ]");
 

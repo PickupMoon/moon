@@ -26,6 +26,8 @@ public class QueryStatementCallback<T> implements StatementCallback<List<T>>{
             return resultList;
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            JdbcUtil.closeStatement(statement);
         }
         return null;
     }

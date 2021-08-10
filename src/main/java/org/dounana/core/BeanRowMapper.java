@@ -1,5 +1,7 @@
 package org.dounana.core;
 
+import org.dounana.utils.JdbcUtil;
+
 import java.lang.reflect.Field;
 import java.sql.*;
 
@@ -29,12 +31,10 @@ public class BeanRowMapper<T> implements RowMapper<T>{
                 setBeanValue(result, label, columnValue);
             }
             return result;
-        } catch (SQLException e) {
+        } catch (SQLException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        }finally {
+            JdbcUtil.closeResultSet(resultSet);
         }
         return null;
     }

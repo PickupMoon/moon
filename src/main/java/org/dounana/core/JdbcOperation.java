@@ -21,7 +21,7 @@ public interface JdbcOperation {
      * @param <T>
      * @return
      */
-    <T> List<T> queryList(String sql, RowMapper<T> rowMapper, Object[] args);
+    <T> List<T> queryList(String sql, RowMapper<T> rowMapper, Object...args);
 
     /**
      * 根据SQL查询出相应的javabean类
@@ -34,13 +34,13 @@ public interface JdbcOperation {
 
     <T> T queryObject(String sql,RowMapper<T> rowMapper);
 
-    <T> T queryObject(String sql,RowMapper<T> rowMapper, Object[] args);
+    <T> T queryObject(String sql,RowMapper<T> rowMapper, Object... args);
 
     <T> T queryObject(String sql, Class<T> targetClass);
 
-    int executeUpdate(String sql);
+    Integer executeUpdate(String sql);
 
-    int executeUpdate(String sql, Object[] args);
+    Integer executeUpdate(String sql, Object... args);
 
     void execute(String sql);
 

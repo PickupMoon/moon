@@ -1,5 +1,7 @@
 package org.dounana.core;
 
+import org.dounana.utils.JdbcUtil;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -20,6 +22,8 @@ public class MapRowMapper implements RowMapper<Map<String, Object>>{
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            JdbcUtil.closeResultSet(resultSet);
         }
         return result;
     }

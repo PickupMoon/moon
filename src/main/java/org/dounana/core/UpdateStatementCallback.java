@@ -1,5 +1,7 @@
 package org.dounana.core;
 
+import org.dounana.utils.JdbcUtil;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -17,6 +19,8 @@ public class UpdateStatementCallback<T> implements StatementCallback<Integer>{
             return statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            JdbcUtil.closeStatement(statement);
         }
         return 0;
     }

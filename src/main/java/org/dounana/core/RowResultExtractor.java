@@ -1,5 +1,7 @@
 package org.dounana.core;
 
+import org.dounana.utils.JdbcUtil;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class RowResultExtractor<T> implements ResultExtractor<List<T>>{
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            JdbcUtil.closeResultSet(resultSet);
         }
         return resultList;
     }
