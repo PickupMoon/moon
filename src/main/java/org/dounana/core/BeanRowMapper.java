@@ -4,6 +4,7 @@ import org.dounana.utils.JdbcUtil;
 
 import java.lang.reflect.Field;
 import java.sql.*;
+import java.util.Locale;
 
 public class BeanRowMapper<T> implements RowMapper<T>{
 
@@ -33,15 +34,13 @@ public class BeanRowMapper<T> implements RowMapper<T>{
             return result;
         } catch (SQLException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
-        }finally {
-            JdbcUtil.closeResultSet(resultSet);
         }
         return null;
     }
 
     private void setBeanValue(T result, String label, Object labelValue) {
         try {
-            Field targetField = result.getClass().getDeclaredField(underScoreToCamelCase(label));
+            Field targetField = result.getClass().getDeclaredField(underScoreToCamelCase(label.toLowerCase(Locale.US)));
             targetField.setAccessible(true);
             targetField.set(result,labelValue);
         } catch (NoSuchFieldException | IllegalAccessException e) {

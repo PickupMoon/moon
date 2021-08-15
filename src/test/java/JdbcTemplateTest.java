@@ -1,8 +1,10 @@
 import org.dounana.core.*;
+import org.dounana.utils.JdbcUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,12 +14,26 @@ public class JdbcTemplateTest {
 
     @Before
     public void setUp() {
-        jdbcTemplate = new JdbcTemplate();
+        jdbcTemplate = new JdbcTemplate(JdbcUtil.connection());
+        String dropSql = "drop table if exists user";
+        jdbcTemplate.execute(dropSql);
+        String createSql= "create TABLE USER (id int PRIMARY KEY,name VARCHAR(64),age int,create_time  datetime DEFAULT CURRENT_TIMESTAMP)";
+        jdbcTemplate.execute(createSql);
     }
 
 
+
+
+    public void executeUpdate() {
+        String sql2 = "insert into user (id,name,age) values (1,'zhaohongxuan',28)" ;
+        int rowCounts2 = jdbcTemplate.executeUpdate(sql2);
+        Assert.assertEquals(1,rowCounts2);
+
+    }
+
     @Test
     public void queryList() {
+        executeUpdate();
         String sql = "select * from user";
         RowMapper<Map<String, Object>> rowMapper = new MapRowMapper();
         List<Map<String, Object>> mapList = jdbcTemplate.queryList(sql, rowMapper);
@@ -27,20 +43,21 @@ public class JdbcTemplateTest {
 
     @Test
     public void queryListByParameter() {
+        executeUpdate();
         String sql = "select * from user where  id >= ? ";
         RowMapper<Map<String,Object>> rowMapper = new MapRowMapper();
-       // Object[] args = new Object[]{2};
-        List<Map<String, Object>> mapList = jdbcTemplate.queryList(sql, rowMapper, 2);
+        List<Map<String, Object>> mapList = jdbcTemplate.queryList(sql, rowMapper, 1);
         System.out.println(mapList);
-        Assert.assertNotNull(mapList);
+        Assert.assertEquals(1,mapList.size());
     }
 
     @Test
     public void queryListByType() {
+        executeUpdate();
         String sql = "select * from user";
         List<User> mapList = jdbcTemplate.queryList(sql, User.class);
         System.out.println(mapList);
-        Assert.assertNotNull(mapList);
+        Assert.assertEquals(1,mapList.size());
     }
 
     @Test
@@ -48,68 +65,53 @@ public class JdbcTemplateTest {
         //1. parepare data
         //2 execute
         //3. compare
+        executeUpdate();
         String sql = "select * from user where id = 1 ";
         Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper());
         System.out.println(stringObjectMap);
-        Assert.assertNotNull(stringObjectMap);
+        Assert.assertEquals(1,stringObjectMap.get("id"));
     }
 
     @Test
     public void queryObjectByArgs() {
+        executeUpdate();
         String sql = "select * from user where name = ?";
-        Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper(), "xiaoXiaoXuan");
+        Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper(), "zhaohongxuan");
         System.out.println(stringObjectMap);
-        Assert.assertNotNull(stringObjectMap);
+        Assert.assertEquals("zhaohongxuan",stringObjectMap.get("name"));
     }
 
     @Test
     public void queryObjectByTargetClass() {
+        executeUpdate();
         User user = jdbcTemplate.queryObject("select * from user where id = 1", User.class);
         System.out.println(user);
-        Assert.assertNotNull(user);
+        Assert.assertEquals(1,user.getId());
     }
 
-    @Test
-    public void executeUpdate() {
 
-       // User userUpdateBefore = jdbcTemplate.queryObject("select * from user where id=3", User.class);
-        List<User> userUpdateBefore = jdbcTemplate.queryList("select * from user", User.class);
-        System.out.println(userUpdateBefore);
-        Assert.assertNotNull(userUpdateBefore);
-
-        //String sql = "update user set name = 'xiaoXiaoXuan' where name='xiaoXiaoNa'";
-        String sql = "insert into user (id,name,age) values (7,'XiaPing',28)";
-        int rowCounts = jdbcTemplate.executeUpdate(sql);
-        System.out.println(rowCounts);
-        //User userUpdateAfter = jdbcTemplate.queryObject("select * from user where id=3", User.class);
-        List<User> userUpdateAfter = jdbcTemplate.queryList("select * from user", User.class);
-        System.out.println(userUpdateAfter);
-        Assert.assertNotNull(userUpdateAfter);
-
-    }
 
     @Test
     public void executeUpdateByArgs() {
+        executeUpdate();
         String sql = "update user set name = ? where id = ?";
-        Object[] args = new Object[]{"douna",2};
-
-        String selectSql = "select * from user where id =2";
-        User userUpdateBefore = jdbcTemplate.queryObject(selectSql, User.class);
-        System.out.println("Message for update before [ "+userUpdateBefore+" ]");
-        Assert.assertNotNull(userUpdateBefore);
-
-        int rowCounts = jdbcTemplate.executeUpdate(sql, "douNaNa",2);
-
-        System.out.println("影响的行数:[ "+rowCounts+" ]");
-
-        User userUpdateAfter = jdbcTemplate.queryObject(selectSql, User.class);
-        System.out.println("Message for update after [ "+userUpdateAfter+" ]");
-        Assert.assertNotNull(userUpdateAfter);
+        int rowCounts = jdbcTemplate.executeUpdate(sql, "xiaoxuanxuan",1);
+        Assert.assertEquals(1,rowCounts);
     }
 
     @Test
-    public void executeUpdateForCreateTable() {
-        String sql = "create table branch (branch_No int , branch_name varchar(64))";
-        jdbcTemplate.execute(sql);
+    public void testExecuteBatchUpdate(){
+        String sql = "insert into user (id,name,age) values (?,?,?)" ;
+        List<Object[]> argsList = new ArrayList<>();
+        argsList.add(new Object[]{2,"zhaohongxuan",29});
+        argsList.add(new Object[]{3,"xiaoxiaoxuan",1});
+        argsList.add(new Object[]{4,"xiaoxiaona",0});
+        argsList.add(new Object[]{5,"dounana",32});
+        int[] batchUpdateArray = jdbcTemplate.executeBatchUpdate(sql, argsList);
+        int[] expectArray = new int[]{1,1,1,1};
+        Assert.assertArrayEquals(expectArray,batchUpdateArray);
+
+        queryList();
     }
+
 }

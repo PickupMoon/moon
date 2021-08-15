@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class MapRowMapper implements RowMapper<Map<String, Object>>{
@@ -18,12 +19,10 @@ public class MapRowMapper implements RowMapper<Map<String, Object>>{
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 String label = metaData.getColumnLabel(i);
-                result.put(label, resultSet.getObject(label));
+                result.put(label.toLowerCase(Locale.US), resultSet.getObject(label));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            JdbcUtil.closeResultSet(resultSet);
         }
         return result;
     }

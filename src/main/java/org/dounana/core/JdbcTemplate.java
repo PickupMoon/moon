@@ -8,6 +8,11 @@ import java.util.List;
 
 public class JdbcTemplate implements JdbcOperation{
 
+    private Connection connection;
+
+    public JdbcTemplate(Connection connection) {
+        this.connection = connection;
+    }
 
     @Override
     public <T> List<T> queryList(String sql, RowMapper<T> rowMapper) {
@@ -64,6 +69,36 @@ public class JdbcTemplate implements JdbcOperation{
     @Override
     public void execute(String sql) {
         execute(new UpdateStatementCallback<Integer>(sql));
+    }
+
+    @Override
+    public int[] executeBatchUpdate(String sql, List<Object[]> argsList) {
+
+        try {
+
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            PreparedStatement prepareStatement = connection.prepareStatement(sql);
+            if (databaseMetaData.supportsBatchUpdates()) {
+
+                for (int i = 0; i < argsList.size(); i++) {
+                    JdbcUtil.doSetValues(prepareStatement, argsList.get(i));
+                    prepareStatement.addBatch();
+                }
+                return prepareStatement.executeBatch();
+            } else {
+                int[] updateRows = new int[argsList.size()];
+                for (int i = 0; i < argsList.size(); i++) {
+                    Integer integer = execute(sql, new UpdatePreparedStatementCallback<Integer>(argsList.get(i)));
+                    updateRows[i]=integer;
+                }
+                return updateRows;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return new int[0];
     }
 
     private <T> T execute( StatementCallback<T> statementCallback) {
