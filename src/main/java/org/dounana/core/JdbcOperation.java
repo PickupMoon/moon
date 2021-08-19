@@ -50,6 +50,9 @@ public interface JdbcOperation {
 
     <T> T queryObject(String sql, Class<T> targetClass);
 
+    <T> T queryObject(String sql, Class<T> targetClass, Object... args);
+
+
     Integer executeUpdate(String sql);
 
     Integer executeUpdate(String sql, Object... args);

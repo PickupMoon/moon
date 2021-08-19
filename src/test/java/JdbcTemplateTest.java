@@ -1,4 +1,5 @@
 import org.dounana.core.*;
+import org.dounana.entity.User;
 import org.dounana.utils.JdbcUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,6 +104,7 @@ public class JdbcTemplateTest {
     public void testExecuteBatchUpdate(){
         String sql = "insert into user (id,name,age) values (?,?,?)" ;
         List<Object[]> argsList = new ArrayList<>();
+        argsList.add(new Object[]{1,"zhaohong",29});
         argsList.add(new Object[]{2,"zhaohongxuan",29});
         argsList.add(new Object[]{3,"xiaoxiaoxuan",1});
         argsList.add(new Object[]{4,"xiaoxiaona",0});
@@ -112,6 +114,16 @@ public class JdbcTemplateTest {
         Assert.assertArrayEquals(expectArray,batchUpdateArray);
 
         queryList();
+    }
+
+    @Test
+    public void testQueryObject(){
+        testExecuteBatchUpdate();
+        String sql = "select * from user where id = ?";
+        User user = jdbcTemplate.queryObject(sql, User.class, 1);
+        System.out.println(user);
+        Assert.assertEquals(1,user.getId());
+
     }
 
 }

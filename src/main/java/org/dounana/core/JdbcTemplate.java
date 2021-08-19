@@ -1,5 +1,6 @@
 package org.dounana.core;
 
+import org.dounana.entity.User;
 import org.dounana.utils.JdbcUtil;
 
 import java.sql.*;
@@ -44,6 +45,11 @@ public class JdbcTemplate implements JdbcOperation{
     @Override
     public <T> T queryObject(String sql, Class<T> targetClass) {
         List<T> resultList = queryList(sql, targetClass);
+        return checkResult(resultList);
+    }
+
+    public <T> T queryObject(String sql, Class<T> targetClass, Object... args) {
+        List<T> resultList = queryList(sql, new BeanRowMapper<>(targetClass), args);
         return checkResult(resultList);
     }
 

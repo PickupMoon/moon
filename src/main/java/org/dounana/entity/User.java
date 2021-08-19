@@ -1,11 +1,24 @@
-package org.dounana.core;
+package org.dounana.entity;
 
+import org.dounana.DouTable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 
+@Entity
+@DouTable(name = "user")
 public class User {
+
+    @Id
+    @Column(name = "id")
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "age")
     private int age;
+    @Column(name = "create_time")
     private Date createTime;
 
     public int getId() {

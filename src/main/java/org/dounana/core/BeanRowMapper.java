@@ -10,6 +10,7 @@ public class BeanRowMapper<T> implements RowMapper<T>{
 
     private Class<T> targetClass;
 
+
     public BeanRowMapper(Class<T> targetClass) {
         this.targetClass = targetClass;
     }
