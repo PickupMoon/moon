@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class UpdatePreparedStatementCallback<T> implements PreparedStatementCallback<Integer>{
 
-    private Object[] args;
+    private final Object[] args;
 
     public UpdatePreparedStatementCallback(Object[] args) {
         this.args = args;

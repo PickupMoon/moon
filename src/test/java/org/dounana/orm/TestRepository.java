@@ -1,10 +1,8 @@
-import com.sun.xml.internal.bind.v2.model.core.ID;
+package org.dounana.orm;
+
 import org.dounana.core.JdbcOperation;
 import org.dounana.core.JdbcTemplate;
 import org.dounana.entity.User;
-import org.dounana.orm.BaseRepository;
-import org.dounana.orm.Repository;
-import org.dounana.orm.SqlMapper;
 import org.dounana.utils.JdbcUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,6 +10,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -63,14 +62,15 @@ public class TestRepository {
         SqlMapper<User> sqlMapper = new SqlMapper<>(User.class);
         List<String> tableColumns = sqlMapper.getTableColumns(User.class);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        /*StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < tableColumns.size(); i++) {
             if (i != tableColumns.size()-1) {
                 stringBuilder.append(tableColumns.get(i)).append(",");
             } else {
                 stringBuilder.append(tableColumns.get(i)).append(" ");
             }
-        }
+        }*/
+        String stringBuilder = String.join(",",tableColumns);
         logger.info("insert into  user " + "( "+stringBuilder+" ) values ( 33,'dd',33,2021-08-15 22:10:53.383)");
     }
 
@@ -102,5 +102,20 @@ public class TestRepository {
         logger.info("更新的状态："+update);
 
         logger.info("更改后的实体为："+repository.findAll());
+    }
+
+    @Test
+    public void testDeleteSql() {
+        testSave();
+        Repository<User, Integer> repository = new BaseRepository<>(jdbcOperation, User.class);
+        repository.delete(33);
+
+        logger.info("更改后的实体为："+repository.findAll());
+    }
+
+    @Test
+    public void testgenerateQuestion(){
+        String join = String.join(",", Collections.nCopies(4, "?"));
+        System.out.println(join);
     }
 }

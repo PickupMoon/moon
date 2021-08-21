@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class UpdateStatementCallback<T> implements StatementCallback<Integer>{
 
-    private String sql;
+    private final String sql;
 
     public UpdateStatementCallback(String sql) {
         this.sql = sql;

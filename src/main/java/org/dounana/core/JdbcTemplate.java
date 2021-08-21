@@ -1,10 +1,8 @@
 package org.dounana.core;
 
-import org.dounana.entity.User;
 import org.dounana.utils.JdbcUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcTemplate implements JdbcOperation{
@@ -79,13 +77,10 @@ public class JdbcTemplate implements JdbcOperation{
 
     @Override
     public int[] executeBatchUpdate(String sql, List<Object[]> argsList) {
-
         try {
-
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             PreparedStatement prepareStatement = connection.prepareStatement(sql);
             if (databaseMetaData.supportsBatchUpdates()) {
-
                 for (int i = 0; i < argsList.size(); i++) {
                     JdbcUtil.doSetValues(prepareStatement, argsList.get(i));
                     prepareStatement.addBatch();

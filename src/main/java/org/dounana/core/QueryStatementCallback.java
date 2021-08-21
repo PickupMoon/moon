@@ -9,9 +9,8 @@ import java.util.List;
 
 public class QueryStatementCallback<T> implements StatementCallback<List<T>>{
 
-    private String sql;
-
-    private RowMapper<T> rowMapper;
+    private final String sql;
+    private final RowMapper<T> rowMapper;
 
     public QueryStatementCallback(String sql, RowMapper<T> rowMapper) {
         this.sql = sql;
@@ -22,8 +21,7 @@ public class QueryStatementCallback<T> implements StatementCallback<List<T>>{
     public List<T> doStatement(Statement statement) {
         try {
             ResultSet resultSet = statement.executeQuery(sql);
-            List<T> resultList = new RowResultExtractor<>(rowMapper).resultConduct(resultSet);
-            return resultList;
+            return new RowResultExtractor<>(rowMapper).resultConduct(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {

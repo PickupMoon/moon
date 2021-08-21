@@ -1,3 +1,5 @@
+package org.dounana.core;
+
 import org.dounana.core.*;
 import org.dounana.entity.User;
 import org.dounana.utils.JdbcUtil;

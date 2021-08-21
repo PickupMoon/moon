@@ -19,7 +19,6 @@ public class QueryPreparedStatementCallback<T> implements PreparedStatementCallb
 
     @Override
     public List<T> doInPreparedStatementCallback(PreparedStatement preparedStatement) {
-
         try {
             JdbcUtil.doSetValues(preparedStatement,args);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -31,6 +30,4 @@ public class QueryPreparedStatementCallback<T> implements PreparedStatementCallb
         }
         return null;
     }
-
-
 }

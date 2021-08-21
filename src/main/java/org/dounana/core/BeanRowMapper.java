@@ -8,8 +8,7 @@ import java.util.Locale;
 
 public class BeanRowMapper<T> implements RowMapper<T>{
 
-    private Class<T> targetClass;
-
+    private final Class<T> targetClass;
 
     public BeanRowMapper(Class<T> targetClass) {
         this.targetClass = targetClass;
@@ -41,7 +40,7 @@ public class BeanRowMapper<T> implements RowMapper<T>{
 
     private void setBeanValue(T result, String label, Object labelValue) {
         try {
-            Field targetField = result.getClass().getDeclaredField(underScoreToCamelCase(label.toLowerCase(Locale.US)));
+            Field targetField = result.getClass().getDeclaredField(underScoreToCamelCase(label));
             targetField.setAccessible(true);
             targetField.set(result,labelValue);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -50,19 +49,15 @@ public class BeanRowMapper<T> implements RowMapper<T>{
     }
 
     private static String underScoreToCamelCase(String underScoreStr) {
-
         char[] labelChars = underScoreStr.toCharArray();
         StringBuilder camelSb = new StringBuilder();
-
         for (int i = 0; i < labelChars.length; i++) {
             if (labelChars[i] == '_') {
                 camelSb.append(Character.toUpperCase(labelChars[++i]));
             } else {
-                camelSb.append(labelChars[i]);
+                camelSb.append(Character.toLowerCase(labelChars[i]));
             }
         }
-
         return camelSb.toString();
     }
-
 }

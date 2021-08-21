@@ -9,7 +9,7 @@ import java.util.List;
 
 public class RowResultExtractor<T> implements ResultExtractor<List<T>>{
 
-    private RowMapper<T> rowMapper;
+    private final RowMapper<T> rowMapper;
 
     public RowResultExtractor(RowMapper<T> rowMapper) {
         this.rowMapper = rowMapper;
