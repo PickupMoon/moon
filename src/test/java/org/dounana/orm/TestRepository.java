@@ -17,7 +17,6 @@ import java.util.List;
 public class TestRepository {
 
     private JdbcOperation jdbcOperation;
-
     Logger logger = LoggerFactory.getLogger(TestRepository.class);
 
     @Before
@@ -29,13 +28,11 @@ public class TestRepository {
         jdbcOperation.execute(createSql);
     }
 
-
     @Test
     public void testRepositoryFindById() {
         String sql2 = "insert into user (id,name,age) values (1,'zhaohongxuan',28)" ;
         int rowCounts2 = jdbcOperation.executeUpdate(sql2);
         Assert.assertEquals(1,rowCounts2);
-
         Repository<User, String> repository = new BaseRepository<>(jdbcOperation, User.class);
         String id = "1";
         User user = repository.findById(id);
@@ -44,13 +41,9 @@ public class TestRepository {
 
     @Test
     public void testSelectAll() {
-        String sql1 = "insert into user (id,name,age) values (1,'zhaohongxuan',28)" ;
         String sql2 = "insert into user (id,name,age) values (2,'dounana',28)" ;
-        int rowCounts1 = jdbcOperation.executeUpdate(sql1);
         int rowCounts2 = jdbcOperation.executeUpdate(sql2);
-
         Assert.assertEquals(1,rowCounts2);
-
         Repository<User, String> repository = new BaseRepository<>(jdbcOperation, User.class);
         List<User> users = repository.findAll();
         logger.info(users.toString());
@@ -61,21 +54,11 @@ public class TestRepository {
     public void testFor() {
         SqlMapper<User> sqlMapper = new SqlMapper<>(User.class);
         List<String> tableColumns = sqlMapper.getTableColumns(User.class);
-
-        /*StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < tableColumns.size(); i++) {
-            if (i != tableColumns.size()-1) {
-                stringBuilder.append(tableColumns.get(i)).append(",");
-            } else {
-                stringBuilder.append(tableColumns.get(i)).append(" ");
-            }
-        }*/
         String stringBuilder = String.join(",",tableColumns);
         logger.info("insert into  user " + "( "+stringBuilder+" ) values ( 33,'dd',33,2021-08-15 22:10:53.383)");
     }
 
-    //@Test
-    public void testSave() {
+    private void testSave() {
         Repository<User, String> repository = new BaseRepository<>(jdbcOperation,User.class);
         User user = new User();
         user.setAge(2);
@@ -89,9 +72,7 @@ public class TestRepository {
 
     @Test
     public void testUpate() {
-
         testSave();
-
         Repository<User, String> repository = new BaseRepository<>(jdbcOperation, User.class);
         User user = new User();
         user.setName("shabi_busha");
@@ -100,7 +81,6 @@ public class TestRepository {
         user.setId(66);
         boolean update = repository.update(user);
         logger.info("更新的状态："+update);
-
         logger.info("更改后的实体为："+repository.findAll());
     }
 
@@ -109,13 +89,12 @@ public class TestRepository {
         testSave();
         Repository<User, Integer> repository = new BaseRepository<>(jdbcOperation, User.class);
         repository.delete(33);
-
         logger.info("更改后的实体为："+repository.findAll());
     }
 
     @Test
-    public void testgenerateQuestion(){
+    public void testGenerateQuestion(){
         String join = String.join(",", Collections.nCopies(4, "?"));
-        System.out.println(join);
+        Assert.assertEquals("?,?,?,?",join);
     }
 }

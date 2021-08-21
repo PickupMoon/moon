@@ -1,13 +1,18 @@
 package org.dounana.core;
 
+import org.dounana.JdbcException;
+import org.dounana.orm.BaseRepository;
 import org.dounana.utils.JdbcUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.List;
 
 public class JdbcTemplate implements JdbcOperation{
 
-    private Connection connection;
+    private final Connection connection;
+    Logger logger = LoggerFactory.getLogger(BaseRepository.class);
 
     public JdbcTemplate(Connection connection) {
         this.connection = connection;
@@ -55,24 +60,24 @@ public class JdbcTemplate implements JdbcOperation{
         if (resultList == null) {
             return null;
         } else if (resultList.size() != 1) {
-            throw new RuntimeException("Too many rows");
+            throw new JdbcException("Too many rows !");
         }
         return resultList.get(0);
     }
 
     @Override
     public Integer executeUpdate(String sql) {
-        return execute(new UpdateStatementCallback<Integer>(sql));
+        return execute(new UpdateStatementCallback(sql));
     }
 
     @Override
     public Integer executeUpdate(String sql, Object... args) {
-        return execute(sql,new UpdatePreparedStatementCallback<Integer>(args));
+        return execute(sql,new UpdatePreparedStatementCallback(args));
     }
 
     @Override
     public void execute(String sql) {
-        execute(new UpdateStatementCallback<Integer>(sql));
+        execute(new UpdateStatementCallback(sql));
     }
 
     @Override
@@ -81,45 +86,40 @@ public class JdbcTemplate implements JdbcOperation{
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             PreparedStatement prepareStatement = connection.prepareStatement(sql);
             if (databaseMetaData.supportsBatchUpdates()) {
-                for (int i = 0; i < argsList.size(); i++) {
-                    JdbcUtil.doSetValues(prepareStatement, argsList.get(i));
+                for (Object[] objects : argsList) {
+                    JdbcUtil.doSetValues(prepareStatement, objects);
                     prepareStatement.addBatch();
                 }
                 return prepareStatement.executeBatch();
             } else {
                 int[] updateRows = new int[argsList.size()];
                 for (int i = 0; i < argsList.size(); i++) {
-                    Integer integer = execute(sql, new UpdatePreparedStatementCallback<Integer>(argsList.get(i)));
+                    Integer integer = execute(sql, new UpdatePreparedStatementCallback(argsList.get(i)));
                     updateRows[i]=integer;
                 }
                 return updateRows;
             }
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("executeBatchUpdate error, sql: {},argsList: {} ",sql, argsList, e);
+            throw new JdbcException(e);
         }
-
-        return new int[0];
     }
 
     private <T> T execute( StatementCallback<T> statementCallback) {
         try {
-            Connection connection = JdbcUtil.connection();
             return statementCallback.doStatement(connection.createStatement());
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("create statement error ! ",e);
+            throw new JdbcException(e);
         }
-        return null;
     }
 
     private <T> T execute(String sql,PreparedStatementCallback<T> preparedStatementCallback) {
         try {
-            Connection connection = JdbcUtil.connection();
             return preparedStatementCallback.doInPreparedStatementCallback(connection.prepareStatement(sql));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("create prepareStatement error !",e);
+            throw new JdbcException(e);
         }
-        return null;
     }
-
 }

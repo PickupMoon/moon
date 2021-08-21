@@ -1,5 +1,6 @@
 package org.dounana.core;
 
+import org.dounana.JdbcException;
 import org.dounana.utils.JdbcUtil;
 
 import java.sql.ResultSet;
@@ -23,7 +24,7 @@ public class RowResultExtractor<T> implements ResultExtractor<List<T>>{
                 resultList.add(rowMapper.rowConvert(resultSet));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new JdbcException("resultSet conduct error !", e);
         }finally {
             JdbcUtil.closeResultSet(resultSet);
         }

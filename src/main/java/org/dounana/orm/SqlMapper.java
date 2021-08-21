@@ -34,7 +34,7 @@ public class SqlMapper<T> {
         String tableName = getTableName(entityClass);
         String id = getTableColumnId(entityClass);
         this.id = id;
-        this.selectSql = "select * from "+tableName+" where "+id+" = ";
+        this.selectSql = "select * from "+tableName+" where "+id+" = ?";
         this.selectAllSql = "select * from "+tableName;
         this.allTableColumns = getTableColumns(entityClass);
         this.entityTableColumnMap = getEntityTableColumns(entityClass);
@@ -42,8 +42,9 @@ public class SqlMapper<T> {
 
         String tableColumns = String.join(",", allTableColumns);
         String updateColumnsPlaceholder = String.join(",", Collections.nCopies(allTableColumns.size(), "?"));
+        String updateColumns = String.join("= ? ,", updateTableColumns) + "=?";
         this.insertSql = "insert into " + tableName + "( "+tableColumns+" ) values ( "+updateColumnsPlaceholder+" )";
-        this.updateSql = "update " + tableName + " set "+String.join("= ? ,", updateTableColumns)+ "where "+id+" = ?";
+        this.updateSql = "update " + tableName + " set "+updateColumns+ " where "+id+" = ?";
         this.deleteSql = "delete from " + tableName + " where " + id + "= ?";
     }
 

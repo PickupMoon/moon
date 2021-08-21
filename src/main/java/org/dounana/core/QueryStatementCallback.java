@@ -18,15 +18,12 @@ public class QueryStatementCallback<T> implements StatementCallback<List<T>>{
     }
 
     @Override
-    public List<T> doStatement(Statement statement) {
+    public List<T> doStatement(Statement statement) throws SQLException {
         try {
             ResultSet resultSet = statement.executeQuery(sql);
             return new RowResultExtractor<>(rowMapper).resultConduct(resultSet);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
+        } finally {
             JdbcUtil.closeStatement(statement);
         }
-        return null;
     }
 }

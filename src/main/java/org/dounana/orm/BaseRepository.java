@@ -1,5 +1,6 @@
 package org.dounana.orm;
 
+import org.dounana.OrmException;
 import org.dounana.core.JdbcOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,8 +71,8 @@ public class BaseRepository<T, ID> implements Repository<T, ID> {
             declaredField.setAccessible(true);
             return declaredField.get(entity);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error("get declaredField error ! field name:{},entity:{}",fieldName,entity);
+            throw new OrmException(e);
         }
-        return null;
     }
 }

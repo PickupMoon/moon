@@ -1,6 +1,5 @@
 package org.dounana.core;
 
-import org.dounana.core.*;
 import org.dounana.entity.User;
 import org.dounana.utils.JdbcUtil;
 import org.junit.Assert;
@@ -23,9 +22,6 @@ public class JdbcTemplateTest {
         String createSql= "create TABLE USER (id int PRIMARY KEY,name VARCHAR(64),age int,create_time  datetime DEFAULT CURRENT_TIMESTAMP)";
         jdbcTemplate.execute(createSql);
     }
-
-
-
 
     public void executeUpdate() {
         String sql2 = "insert into user (id,name,age) values (1,'zhaohongxuan',28)" ;
@@ -65,9 +61,6 @@ public class JdbcTemplateTest {
 
     @Test
     public void queryObject(){
-        //1. parepare data
-        //2 execute
-        //3. compare
         executeUpdate();
         String sql = "select * from user where id = 1 ";
         Map<String, Object> stringObjectMap = jdbcTemplate.queryObject(sql, new MapRowMapper());
@@ -92,8 +85,6 @@ public class JdbcTemplateTest {
         Assert.assertEquals(1,user.getId());
     }
 
-
-
     @Test
     public void executeUpdateByArgs() {
         executeUpdate();
@@ -112,10 +103,8 @@ public class JdbcTemplateTest {
         argsList.add(new Object[]{4,"xiaoxiaona",0});
         argsList.add(new Object[]{5,"dounana",32});
         int[] batchUpdateArray = jdbcTemplate.executeBatchUpdate(sql, argsList);
-        int[] expectArray = new int[]{1,1,1,1};
+        int[] expectArray = new int[]{1,1,1,1,1};
         Assert.assertArrayEquals(expectArray,batchUpdateArray);
-
-        queryList();
     }
 
     @Test
@@ -125,7 +114,5 @@ public class JdbcTemplateTest {
         User user = jdbcTemplate.queryObject(sql, User.class, 1);
         System.out.println(user);
         Assert.assertEquals(1,user.getId());
-
     }
-
 }

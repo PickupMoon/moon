@@ -1,6 +1,7 @@
 package org.dounana.core;
 
-import org.dounana.utils.JdbcUtil;
+
+import org.dounana.JdbcException;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -22,7 +23,7 @@ public class MapRowMapper implements RowMapper<Map<String, Object>>{
                 result.put(label.toLowerCase(Locale.US), resultSet.getObject(label));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new JdbcException("row mapper convert failed !",e);
         }
         return result;
     }

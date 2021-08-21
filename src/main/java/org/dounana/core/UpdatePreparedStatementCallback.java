@@ -1,11 +1,12 @@
 package org.dounana.core;
 
+import org.dounana.JdbcException;
 import org.dounana.utils.JdbcUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class UpdatePreparedStatementCallback<T> implements PreparedStatementCallback<Integer>{
+public class UpdatePreparedStatementCallback implements PreparedStatementCallback<Integer>{
 
     private final Object[] args;
 
@@ -19,10 +20,9 @@ public class UpdatePreparedStatementCallback<T> implements PreparedStatementCall
              JdbcUtil.doSetValues(preparedStatement,args);
              return preparedStatement.executeUpdate();
          } catch (SQLException e) {
-             e.printStackTrace();
+             throw new JdbcException("prepareStatement callback error !", e);
          }finally {
              JdbcUtil.closeStatement(preparedStatement);
          }
-         return 0;
     }
 }
